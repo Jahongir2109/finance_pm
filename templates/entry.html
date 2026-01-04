@@ -1,0 +1,189 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<div class="card mb-3 p-3 d-flex justify-content-between flex-row">
+    <strong>{{ title }}</strong>
+    <button class="btn btn-primary" id="addEntryBtn">+</button>
+</div>
+
+<table class="table">
+    <tbody>
+        {% for i in entries %}
+        <tr class="entry-row" data-id="{{ i.id }}" data-name="{{ i.name }}" data-category="{{ i.categoryId }}"
+            data-amount="{{ i.amount }}" data-account="{{ i.accountId }}" data-date="{{ i.date }}"
+            data-description="{{ i.description }}" style="cursor:pointer">
+            <td>{{ i.name }}</td>
+            <td>{{ i.category }}</td>
+            <td>{{ i.amount }}</td>
+            <td>{{ i.account }}</td>
+            <td>{{ i.date }}</td>
+            <td>{{ i.description }}</td>
+            <td>
+                <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="{{ i.id }}">
+                    Delete
+                </button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- ADD ENTRY MODAL -->
+<div class="modal fade" id="addEntryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{{ url_for(endpoint) }}">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add {{ title[:-1] }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input name="name" class="form-control mb-2" placeholder="Name" required>
+                    <select name="accountId" class="form-select mb-2" required>
+                        {% for a in accounts %}
+                        <option value="{{ a.id }}">{{ a.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <select name="categoryId" id="addCategorySelect" class="form-select mb-2" required>
+                        {% for c in categories %}
+                        <option value="{{ c.id }}">{{ c.name }}</option>
+                        {% endfor %}
+                        <option value="default" selected disabled>Select a category</option>
+                        <option value="add">Add new category</option>
+                    </select>
+                    <input name="amount" type="number" step="0.01" class="form-control mb-2" placeholder="Amount" required>
+                    <input name="date" type="date" class="form-control mb-2" required>
+                    <textarea name="description" class="form-control" placeholder="Description"></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+                    <button class="btn btn-success">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT ENTRY MODAL -->
+<div class="modal fade" id="editEntryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="editEntryForm">
+                <input type="hidden" id="editEntryId">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit {{ title[:-1] }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input id="editEntryName" class="form-control mb-2" required>
+                    <select id="editEntryAccount" class="form-select mb-2" required>
+                        {% for a in accounts %}
+                        <option value="{{ a.id }}">{{ a.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="editEntryCategory" class="form-select mb-2" required>
+                        {% for c in categories %}
+                        <option value="{{ c.id }}">{{ c.name }}</option>
+                        {% endfor %}
+                        <option value="add">Add new category</option>
+                    </select>
+                    <input id="editEntryAmount" type="number" step="0.01" class="form-control mb-2" required>
+                    <input id="editEntryDate" type="date" class="form-control mb-2" required>
+                    <textarea id="editEntryDescription" class="form-control"></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button id="saveEditEntryBtn" type="button" class="btn btn-success">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const addModal = new bootstrap.Modal(document.getElementById('addEntryModal'));
+    const editModal = new bootstrap.Modal(document.getElementById('editEntryModal'));
+
+    document.getElementById('addEntryBtn').onclick = () => addModal.show();
+
+    const addCategorySelect = document.getElementById("addCategorySelect");
+    if (addCategorySelect) {
+        addCategorySelect.addEventListener("change", function() {
+            if (this.value === "add") {
+                window.location.href = "{{ url_for('categories') }}";
+            }
+        });
+    }
+
+    const editId = document.getElementById("editEntryId");
+    const editName = document.getElementById("editEntryName");
+    const editAccount = document.getElementById("editEntryAccount");
+    const editCategory = document.getElementById("editEntryCategory");
+    const editAmount = document.getElementById("editEntryAmount");
+    const editDate = document.getElementById("editEntryDate");
+    const editDescription = document.getElementById("editEntryDescription");
+    const saveEditBtn = document.getElementById("saveEditEntryBtn");
+
+    document.querySelectorAll('.entry-row').forEach(row => {
+        row.onclick = () => {
+            editId.value = row.dataset.id;
+            editName.value = row.dataset.name;
+            editAccount.value = row.dataset.account;
+            editCategory.value = row.dataset.category;
+            editAmount.value = row.dataset.amount;
+            editDate.value = row.dataset.date;
+            editDescription.value = row.dataset.description;
+            editModal.show();
+        };
+    });
+
+    editCategory.addEventListener("change", function() {
+        if (this.value === "add") {
+            window.location.href = "{{ url_for('categories') }}";
+        }
+    });
+
+    saveEditBtn.onclick = async () => {
+        const payload = {
+            id: editId.value,
+            name: editName.value,
+            accountId: editAccount.value,
+            categoryId: editCategory.value,
+            amount: editAmount.value,
+            date: editDate.value,
+            description: editDescription.value
+        };
+        const res = await fetch("{{ url_for(endpoint) }}", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+            credentials: "same-origin"
+        });
+        res.ok ? location.reload() : alert("Update failed");
+    };
+
+    document.querySelectorAll(".delete-btn").forEach(btn => {
+        btn.onclick = async e => {
+            e.stopPropagation();
+            if (!confirm("Delete entry?")) return;
+            const res = await fetch("{{ url_for(endpoint) }}", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: btn.dataset.id }),
+                credentials: "same-origin"
+            });
+            res.ok ? location.reload() : alert("Delete failed");
+        };
+    });
+
+});
+</script>
+
+{% endblock %}

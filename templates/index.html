@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="card mb-3">
+    <a href="{{ url_for('accounts') }}" class="text-decoration-none text-dark">
+        <div class="action-item">
+            <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-wallet"></i>
+                <strong>Accounts</strong><br>
+            </div>
+        </div>
+    </a>
+</div>
+<div class="card mb-3">
+    {% for account in accounts %}
+    <div class="action-item">
+        <div class="d-flex align-items-center gap-3">
+            <i class="bi bi-wallet"></i>
+            <strong>{{ account.name }}</strong><br>
+        </div>
+        <div>
+            <strong>{{ "%.2f"|format(account.balance) }} {{ account.currency }}</strong>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Actions -->
+<div class="card mb-3">
+    <a href="{{ url_for('incomes') }}" class="text-decoration-none text-dark">
+        <div class="action-item">
+            <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-arrow-down income-icon"></i>
+                <strong>Incomes</strong>
+            </div>
+            <strong class="button-income">+</strong>
+        </div>
+    </a>
+    <a href="{{ url_for('expenses') }}" class="text-decoration-none text-dark">
+        <div class="action-item">
+            <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-arrow-up expense-icon"></i>
+                <strong>Expenses</strong>
+            </div>
+            <strong class="button-expense">+</strong>
+        </div>
+    </a>
+
+    <a href="{{ url_for('transfers') }}" class="text-decoration-none text-dark">
+        <div class="action-item">
+            <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-arrows transfer-icon"></i>
+                <strong>Transfers</strong>
+            </div>
+            <strong class="button-transfer">+</strong>
+        </div>
+    </a>
+</div>
+<!-- Recent transactions -->
+<div class="card mb-3">
+    <div class="action-item">
+        <strong>Recent transactions</strong>
+    </div>
+    <table class="table mt-2">
+        <tbody>
+            {% for income in recent_entries %}
+            <tr>
+                <td>{{ income.name }}</td>
+                <td>{{ income.category }}</td>
+                <td><span class="amount {{ 'text-green' if income.type == 0 else 'text-red' }}">{{
+                        "%.2f"|format(income.amount)
+                        }}</span></td>
+                <td>{{ income.date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card mb-3">
+    <div class="action-item">
+        <div class="d-flex align-items-center gap-3">
+            <i class="bi bi-clipboard-data transfer-icon"></i>
+            <strong>Reports</strong>
+        </div>
+    </div>
+</div>
+{% endblock %}

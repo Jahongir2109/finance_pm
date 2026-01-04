@@ -1,0 +1,171 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<div class="card mb-3 p-3 d-flex justify-content-between flex-row">
+    <strong>Categories</strong>
+    <button class="btn btn-primary" id="addCategoryBtn">+</button>
+</div>
+
+<table class="table">
+    <tbody>
+        {% for c in categories %}
+        <tr class="category-row" data-id="{{ c.id }}" data-name="{{ c.name }}" data-parent="{{ c.parentId or '' }}"
+            style="cursor:pointer">
+            <td>{{ c.name }}</td>
+            <td>{{ c.parentName or "-" }}</td>
+            <td>{{ c.type == 0 and "Income" or "Expense" }}</td>
+            <td>
+                <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="{{ c.id }}">
+                    Delete
+                </button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- ADD CATEGORY MODAL -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="addCategoryForm" method="post" action="{{ url_for('categories') }}">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input name="name" class="form-control mb-2" placeholder="Category Name" required>
+                    <select name="type" id="addIncomeType" class="form-select mb-2" required>
+                        <option value="0">Income</option>
+                        <option value="1">Expense</option>
+                    </select>
+                    <select name="parentId" class="form-select mb-2">
+                        <option value="">No parent</option>
+                        {% for c in categories %}
+                        <option value="{{ c.id }}">{{ c.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+                    <button type="submit" class="btn btn-success">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT CATEGORY MODAL -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="editCategoryForm">
+                <input type="hidden" id="editCategoryId" name="id">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input id="editCategoryName" name="name" class="form-control mb-2" placeholder="Category Name"
+                        required>
+                    <select name="type" id="editType" class="form-select" required>
+                        <option value="0">Income</option>
+                        <option value="1">Expense</option>
+                    </select>
+                    <select id="editCategoryParent" name="parentId" class="form-select mb-2">
+                        <option value="">No parent</option>
+                        {% for c in categories %}
+                        <option value="{{ c.id }}">{{ c.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+                    <button type="button" id="saveEditCategoryBtn" class="btn btn-success">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const addModal = new bootstrap.Modal(document.getElementById('addCategoryModal'));
+        const editModal = new bootstrap.Modal(document.getElementById('editCategoryModal'));
+
+        // Add Category button
+        document.getElementById('addCategoryBtn').onclick = () => addModal.show();
+
+        // Edit modal: populate fields on row click
+        const editId = document.getElementById('editCategoryId');
+        const editType = document.getElementById('editType');
+        const editName = document.getElementById('editCategoryName');
+        const editParent = document.getElementById('editCategoryParent');
+        const saveEditBtn = document.getElementById('saveEditCategoryBtn');
+
+        document.querySelectorAll('.category-row').forEach(row => {
+            row.addEventListener('click', () => {
+                editId.value = row.dataset.id;
+                editName.value = row.dataset.name;
+                editParent.value = row.dataset.parent;
+                editType.value = row.dataset.type;
+                editModal.show();
+            });
+        });
+
+        // Save edited category
+        saveEditBtn.addEventListener('click', async () => {
+            const payload = {
+                id: editId.value,
+                name: editName.value,
+                type: editType.value,
+                parentId: editParent.value
+            };
+            try {
+                const res = await fetch("{{ url_for('categories') }}", {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    credentials: 'same-origin'
+                });
+                if (res.ok) {
+                    location.reload();
+                } else {
+                    const text = await res.text();
+                    console.error('PUT failed', res.status, text);
+                    alert('Update failed');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Network error');
+            }
+        });
+
+        // Delete category
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', async e => {
+                e.stopPropagation();
+                if (!confirm('Delete this category?')) return;
+                const id = btn.dataset.id;
+                try {
+                    const res = await fetch("{{ url_for('categories') }}", {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id }),
+                        credentials: 'same-origin'
+                    });
+                    if (res.ok) location.reload();
+                    else {
+                        const text = await res.text();
+                        alert('Delete failed');
+                    }
+                } catch (err) {
+                    alert('Network error');
+                }
+            });
+        });
+
+    });
+</script>
+
+{% endblock %}

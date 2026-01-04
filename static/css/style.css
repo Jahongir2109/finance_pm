@@ -1,0 +1,106 @@
+:root {
+    /* Colors */
+    --bg-main: #e9f1e5;
+    --card-bg: #ffffff;
+    --border-light: #eeeeee;
+
+    --green: #2ecc71;
+    --red: #e74c3c;
+    --blue: #3498db;
+    --yellow: #f1c40f;
+
+    --text-main: #2c2c2c;
+    --text-muted: #6c757d;
+
+    /* Spacing */
+    /* --padding-item: 12px 16px; */
+
+    /* Icon sizes */
+    /* --icon-sm: 18px;
+    --icon-md: 20px; */
+}
+
+body {
+    background-color: #e9f1e5;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.card {
+    border-radius: 16px;
+}
+
+.action-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid #eee;
+}
+
+.action-item:last-child {
+    border-bottom: none;
+}
+
+.circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 600;
+}
+.text-green { color: var(--green); }
+.text-red   { color: var(--red); }
+.text-blue  { color: var(--blue); }
+.text-yellow{ color: var(--yellow); }
+
+.transfer-icon{
+    background-color: var(--blue);
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+.income-icon{
+    background-color: var(--green);
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+.expense-icon{
+    background-color: var(--blue);
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+.button-transfer{
+    background-color: var(--blue);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+.button-income{
+    background-color: var(--green);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+.button-expense{
+    background-color: var(--red);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
