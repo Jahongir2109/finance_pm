@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="container">
+    <h3 class="mb-3">{{ title }}</h3>
+
+    <div class="card p-3">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    {% if rows and 'category' in rows[0] %}
+                    <th>Category</th>
+                    {% elif rows and 'month' in rows[0] %}
+                    <th>Month</th>
+                    {% endif %}
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                <tr>
+                    {% if row.category is defined %}
+                    <td>{{ row.category }}</td>
+                    {% elif row.month is defined %}
+                    <td>{{ row.month }}</td>
+                    {% endif %}
+                    <td>{{ "%.2f"|format(row[value_key]) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
