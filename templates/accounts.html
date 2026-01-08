@@ -40,7 +40,7 @@
 
                 <div class="modal-body">
                     <input name="name" class="form-control mb-2" placeholder="Name" required>
-                    <input name="balance" type="number" step="0.01" class="form-control mb-2" required>
+                    <input name="balance" type="number" step="0.01" class="form-control mb-2" placeholder="Balance" required>
                     <select name="currency" id="currencySelect" class="form-select" required>
                         {% for c in currencies %}
                         <option value="{{ c.id }}">{{ c.name }}</option>
@@ -72,7 +72,7 @@
 
                 <div class="modal-body">
                     <input id="editName" class="form-control mb-2" required>
-                    <input id="editBalance" type="number" step="0.01" class="form-control mb-2" required>
+                    <input id="editBalance" type="number" step="0.01" placeholder="balance" class="form-control mb-2" required>
                     <select id="currencySelect" class="form-select">
                         {% for c in currencies %}
                         <option value="{{ c.id }}">{{ c.name }}</option>

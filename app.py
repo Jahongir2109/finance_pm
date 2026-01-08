@@ -42,7 +42,8 @@ def index():
     return render_template(
         "index.html",
         accounts=accounts,
-        recent_entries=recent_entries
+        recent_entries=recent_entries,
+        title="Dashboard"
     )
 
 # -----------------------
@@ -80,6 +81,7 @@ def accounts():
     return render_template(
         "accounts.html",
         accounts=accounts_list,
+        title="Accounts",
         currencies=currencies_list
     )
 
@@ -111,7 +113,8 @@ def currencies():
     currencies_list = db.execute("SELECT * FROM currencies")
     return render_template(
         "currencies.html",
-        currencies=currencies_list
+        currencies=currencies_list,
+        title="Currencies"
     )
 
 # -----------------------
@@ -158,7 +161,7 @@ def categories():
         FROM categories c
         LEFT JOIN categories p ON p.id = c.parentId
     """)
-    return render_template("categories.html", categories=categories_list)
+    return render_template("categories.html", categories=categories_list, title="Categories")
 
 # -----------------------
 # GENERIC ENTRIES (INCOME / EXPENSE)
@@ -273,7 +276,7 @@ def transfers():
     """)
 
     accounts_list = db.execute("SELECT * FROM accounts")
-    return render_template("transfers.html", transfers=transfers_list, accounts=accounts_list)
+    return render_template("transfers.html", transfers=transfers_list, accounts=accounts_list,title="Transfers")
 
 # -----------------------
 # REPORTS
@@ -284,7 +287,7 @@ def transfers():
 @app.route("/reports")
 def reports():
     # Bu sahifa 4 ta hisobotga link beradi
-    return render_template("reports.html")
+    return render_template("reports.html",title="Reports")
 
 
 # -----------------------
@@ -345,7 +348,7 @@ def report_expense_category():
         "report_detail.html",
         title="Expense by Category",
         rows=data,
-        value_key="amount"
+        value_key="amount",
     )
 
 
@@ -365,5 +368,5 @@ def report_expense_monthly():
         "report_detail.html",
         title="Expense Monthly",
         rows=data,
-        value_key="amount"
+        value_key="amount",
     )
