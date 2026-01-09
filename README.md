@@ -1,5 +1,9 @@
 # Finance PM (Personal Finance Manager)
 
+## Video Demo
+https://youtu.be/IaupHlegp_o
+
+
 ## Overview
 
 Finance PM is a personal finance management web application designed to help users track their incomes, expenses, transfers, and view summarized financial reports. The project focuses on simplicity, clarity, and usability while covering core financial management functionality. It allows users to organize their financial data by accounts and categories, monitor recent transactions, and analyze reports based on stored data.
